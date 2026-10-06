@@ -379,10 +379,16 @@ S -> id</textarea>
 <span class="material-symbols-outlined text-sm" data-icon="refresh">refresh</span>
               Clear
             </button>
-<button onclick="document.getElementById('grammarInput').value = 'S -> S + S\\nS -> S * S\\nS -> ( S )\\nS -> id'; document.getElementById('targetString').value = 'id + id * id';" class="px-3.5 py-3 rounded-lg bg-surface-container-high/80 hover:bg-surface-bright/50 border border-outline-variant/40 text-on-surface-variant hover:text-on-surface text-label-md font-label-md transition-all flex items-center gap-1.5" title="Load classic examples">
-<span class="material-symbols-outlined text-sm" data-icon="folder_open">folder_open</span>
-              Examples
-            </button>
+<div class="relative">
+  <select onchange="if(this.value){ const v = this.value.split('|'); document.getElementById('grammarInput').value = v[0].replace(/\\n/g, '\n'); document.getElementById('targetString').value = v[1]; this.value=''; }" class="pl-8 pr-4 py-3 rounded-lg bg-surface-container-high/80 hover:bg-surface-bright/50 border border-outline-variant/40 text-on-surface-variant hover:text-on-surface text-label-md font-label-md transition-all appearance-none cursor-pointer outline-none focus:border-primary-container/60 w-36" title="Load classic examples">
+    <option value="" disabled selected>Examples...</option>
+    <option value="S -> S + S\nS -> S * S\nS -> ( S )\nS -> id|id + id * id">1. Math Expressions</option>
+    <option value="S -> if E then S\nS -> if E then S else S\nS -> a\nE -> b|if b then if b then a else a">2. Dangling Else</option>
+    <option value="S -> S S\nS -> a\nS -> b|a a a">3. S -> S S (a a a)</option>
+    <option value="S -> a S b S\nS -> b S a S\nS -> e|a b a b">4. Equal a/b</option>
+  </select>
+  <span class="material-symbols-outlined text-sm absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant" data-icon="folder_open">folder_open</span>
+</div>
 </div>
 </div>
 </section>
