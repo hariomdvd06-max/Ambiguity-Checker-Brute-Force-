@@ -45,17 +45,20 @@ def parse_grammar():
         
         # 4. Generate Visualizations (ASCII art)
         tree_arts = []
+        derivations = []
         # Return at most 2 trees to fit the UI dual view
         for i, t in enumerate(trees[:2]):
             visualizer = TreeVisualizer(t)
             art = visualizer.render_ascii_tree()
             tree_arts.append(art)
+            derivations.append(t.get_leftmost_derivation())
             
         return jsonify({
             "status": "success",
             "is_ambiguous": is_ambiguous,
             "total_trees": unique_trees_count,
-            "trees": tree_arts
+            "trees": tree_arts,
+            "derivations": derivations
         })
         
     except Exception as e:

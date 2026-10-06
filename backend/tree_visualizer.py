@@ -82,6 +82,33 @@ class ParseTree:
             return 1 + sum(_count(c) for c in node.children)
         return _count(self.root)
 
+    def get_leftmost_derivation(self):
+        steps = []
+        current_frontier = [self.root]
+        
+        def format_frontier(frontier):
+            return ' '.join(node.symbol for node in frontier if node.symbol != 'epsilon')
+            
+        steps.append(format_frontier(current_frontier))
+        
+        while True:
+            # Find first non-terminal that has children
+            first_nt_idx = -1
+            for i, node in enumerate(current_frontier):
+                if not node.is_terminal and node.children:
+                    first_nt_idx = i
+                    break
+                    
+            if first_nt_idx == -1:
+                break
+                
+            # Replace it with its children
+            node_to_expand = current_frontier[first_nt_idx]
+            current_frontier = current_frontier[:first_nt_idx] + node_to_expand.children + current_frontier[first_nt_idx+1:]
+            steps.append(format_frontier(current_frontier))
+            
+        return steps
+
     def get_all_derivations(self):
         return self.root.get_derivation_sequence()
 

@@ -479,35 +479,8 @@ S -> id</textarea>
 <span class="w-2 h-2 rounded-full bg-primary-container"></span>
 <span class="text-label-md font-label-md font-semibold text-primary">Parse Tree A</span>
 </div>
-<span class="px-2 py-0.5 rounded bg-surface-variant/40 text-[10px] font-label-sm text-[#00f0ff] uppercase">
-                (+) Lower Precedence
-              </span>
+<div id="derivation1Output" class="p-2 rounded bg-surface-container-lowest/80 font-code-md text-[11px] text-on-surface-variant leading-relaxed break-all border border-outline-variant/15 flex flex-col gap-1 hidden">
 </div>
-<!-- ASCII Parse Tree Display -->
-<pre id="tree1Output" class="font-code-md text-code-md text-on-surface leading-snug bg-surface-container-lowest/90 p-3 rounded border border-outline-variant/20 overflow-x-auto custom-scrollbar select-all">          <span class="text-primary-container font-bold">S</span>
-        ┌─┴─┬─┐
-        <span class="text-primary-container font-bold">S</span>   <span class="text-[#00ffaa] font-bold">+</span> <span class="text-[#ffb020] font-bold">S</span>
-       ┌┴┐   ┌┴┐
-      <span class="text-[#00ffaa]">id</span> <span class="text-outline-variant">ε</span>   <span class="text-primary-container font-bold">S</span> <span class="text-[#00ffaa] font-bold">*</span> <span class="text-primary-container font-bold">S</span>
-             ┌┴┐ ┌┴┐
-            <span class="text-[#00ffaa]">id</span> <span class="text-outline-variant">ε</span> <span class="text-[#00ffaa]">id</span> <span class="text-outline-variant">ε</span>
-            </pre>
-<!-- Derivation 1 Step Sequence -->
-<div class="flex flex-col gap-1 pt-1 border-t border-outline-variant/20">
-<span class="text-[11px] font-label-sm text-outline uppercase tracking-wider">Leftmost Derivation Sequence:</span>
-<div class="p-2 rounded bg-surface-container-lowest/80 font-code-md text-[11px] text-on-surface-variant leading-relaxed break-all border border-outline-variant/15">
-<span class="text-primary-container font-semibold">S</span>
-<span class="text-[#a855f7]">=&gt;</span> <span class="text-primary-container">S</span> + S
-                <span class="text-[#a855f7]">=&gt;</span> id + <span class="text-[#ffb020] font-semibold">S</span>
-<span class="text-[#a855f7]">=&gt;</span> id + <span class="text-primary-container">S * S</span>
-<span class="text-[#a855f7]">=&gt;</span> id + id * <span class="text-primary-container">S</span>
-<span class="text-[#a855f7]">=&gt;</span> <strong class="text-[#00ffaa]">id + id * id</strong>
-</div>
-</div>
-<!-- Semantics Tag -->
-<div class="text-[11px] text-outline flex items-center gap-1.5">
-<span class="material-symbols-outlined text-xs text-primary-container" data-icon="functions">functions</span>
-              Interpreted as: <code class="font-code-md text-on-surface">id + (id * id)</code>
 </div>
 </div>
 <!-- Tree 2: Right-Associative (*) First -->
@@ -517,35 +490,15 @@ S -> id</textarea>
 <span class="w-2 h-2 rounded-full bg-[#ffb020] shadow-[0_0_8px_#ffb020]"></span>
 <span class="text-label-md font-label-md font-semibold text-[#ffb020]">Parse Tree B</span>
 </div>
-<span class="px-2 py-0.5 rounded bg-[#ffb020]/15 text-[10px] font-label-sm text-[#ffb020] uppercase font-semibold">
-                (*) Lower Precedence
-              </span>
 </div>
 <!-- ASCII Parse Tree Display -->
-<pre id="tree2Output" class="font-code-md text-code-md text-on-surface leading-snug bg-surface-container-lowest/90 p-3 rounded border border-outline-variant/20 overflow-x-auto custom-scrollbar select-all">          <span class="text-[#ffb020] font-bold">S</span>
-        ┌─┴─┬─┐
-        <span class="text-[#ffb020] font-bold">S</span>   <span class="text-[#00ffaa] font-bold">*</span> <span class="text-primary-container font-bold">S</span>
-       ┌┴┬─┐   ┌┴┐
-       <span class="text-primary-container font-bold">S</span> <span class="text-[#00ffaa] font-bold">+</span> <span class="text-primary-container font-bold">S</span>  <span class="text-[#00ffaa]">id</span> <span class="text-outline-variant">ε</span>
-      ┌┴┐ ┌┴┐
-     <span class="text-[#00ffaa]">id</span> <span class="text-outline-variant">ε</span> <span class="text-[#00ffaa]">id</span> <span class="text-outline-variant">ε</span>
-            </pre>
+<pre id="tree2Output" class="font-code-md text-code-md text-on-surface leading-snug bg-surface-container-lowest/90 p-3 rounded border border-outline-variant/20 overflow-x-auto custom-scrollbar select-all">          
+</pre>
 <!-- Derivation 2 Step Sequence -->
 <div class="flex flex-col gap-1 pt-1 border-t border-outline-variant/20">
 <span class="text-[11px] font-label-sm text-[#ffb020] uppercase tracking-wider">Leftmost Derivation Sequence:</span>
-<div class="p-2 rounded bg-surface-container-lowest/80 font-code-md text-[11px] text-on-surface-variant leading-relaxed break-all border border-[#ffb020]/20">
-<span class="text-[#ffb020] font-semibold">S</span>
-<span class="text-[#a855f7]">=&gt;</span> <span class="text-[#ffb020]">S * S</span>
-<span class="text-[#a855f7]">=&gt;</span> <span class="text-primary-container">S + S</span> * S
-                <span class="text-[#a855f7]">=&gt;</span> id + <span class="text-primary-container">S</span> * S
-                <span class="text-[#a855f7]">=&gt;</span> id + id * <span class="text-primary-container">S</span>
-<span class="text-[#a855f7]">=&gt;</span> <strong class="text-[#00ffaa]">id + id * id</strong>
+<div id="derivation2Output" class="p-2 rounded bg-surface-container-lowest/80 font-code-md text-[11px] text-on-surface-variant leading-relaxed break-all border border-[#ffb020]/20 flex flex-col gap-1 hidden">
 </div>
-</div>
-<!-- Semantics Tag -->
-<div class="text-[11px] text-outline flex items-center gap-1.5">
-<span class="material-symbols-outlined text-xs text-[#ffb020]" data-icon="functions">functions</span>
-              Interpreted as: <code class="font-code-md text-on-surface">(id + id) * id</code>
 </div>
 </div>
 </div>
@@ -812,6 +765,23 @@ CFG Formats Supported:
             
             const tree2 = document.getElementById('tree2Output');
             if (tree2) tree2.innerText = data.trees.length > 1 ? data.trees[1] : "No second derivation tree found.";
+            
+            if (data.derivations && data.derivations.length > 0) {
+              const der1 = document.getElementById('derivation1Output');
+              if (der1) {
+                der1.innerHTML = data.derivations[0].map((step, i) => i === 0 ? `<span>${step}</span>` : `<span class="text-primary-container">=&gt; ${step}</span>`).join('');
+                der1.classList.remove('hidden');
+              }
+              const der2 = document.getElementById('derivation2Output');
+              if (der2) {
+                if (data.derivations.length > 1) {
+                  der2.innerHTML = data.derivations[1].map((step, i) => i === 0 ? `<span>${step}</span>` : `<span class="text-[#ffb020]">=&gt; ${step}</span>`).join('');
+                  der2.classList.remove('hidden');
+                } else {
+                  der2.classList.add('hidden');
+                }
+              }
+            }
           }
         } else {
           alert('Error: ' + data.message);
