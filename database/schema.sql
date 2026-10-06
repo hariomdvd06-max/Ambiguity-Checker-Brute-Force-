@@ -1,0 +1,1 @@
+-- SQLite Schema for TOC Ambiguity Checker\n
