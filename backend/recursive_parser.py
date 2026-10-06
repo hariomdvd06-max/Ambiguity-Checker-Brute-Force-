@@ -64,7 +64,7 @@ class RecursiveDescentParser:
             return []
 
         # Start recursive parsing
-        results = self.parse_symbol(self.grammar.start_symbol, target_string, 0, [])
+        results = self.parse_symbol(self.grammar.start_symbol, target_string, 0)
         
         # After building valid derivation paths that consume the entire string, we build trees
         for res in results:
@@ -74,12 +74,11 @@ class RecursiveDescentParser:
 
         return self.trees
 
-    def parse_symbol(self, symbol, remaining_string, depth, path):
+    def parse_symbol(self, symbol, remaining_string, depth):
         self.nodes_explored += 1
         
         if depth > self.max_depth:
             # We reached the derivation depth limit without consuming the string.
-            # Instead of crashing, just backtrack.
             return []
             
         state = (symbol, remaining_string, depth)
@@ -94,20 +93,23 @@ class RecursiveDescentParser:
             res = self.match_terminal(symbol, remaining_string)
             if res is not None:
                 results.append({
-                    'derivation': path + [(symbol, None, True)],
+                    'derivation': [(symbol, None, True)],
                     'remaining': res
                 })
         else:
             # Expand non-terminal
             for production in self.grammar.get_production_rules(symbol):
-                new_path = path + [(symbol, production, False)]
                 symbols = production.split()
                 if symbols == ['epsilon']:
                     symbols = []
                 
                 # Kick off expansion of the RHS symbols
-                prod_results = self.expand_non_terminal(symbols, remaining_string, depth + 1, new_path)
-                results.extend(prod_results)
+                prod_results = self.expand_non_terminal(symbols, remaining_string, depth + 1)
+                for pr in prod_results:
+                    results.append({
+                        'derivation': [(symbol, production, False)] + pr['derivation'],
+                        'remaining': pr['remaining']
+                    })
                 
         self.memoize_result(state, results)
         return results
@@ -118,21 +120,25 @@ class RecursiveDescentParser:
             return remaining_string[len(terminal):].lstrip()
         return None
 
-    def expand_non_terminal(self, symbols, remaining_string, depth, path):
+    def expand_non_terminal(self, symbols, remaining_string, depth):
         if not symbols:
-            return [{'derivation': path, 'remaining': remaining_string}]
+            return [{'derivation': [], 'remaining': remaining_string}]
             
         first_symbol = symbols[0]
         rest_symbols = symbols[1:]
         
         results = []
-        first_results = self.parse_symbol(first_symbol, remaining_string, depth, path)
+        first_results = self.parse_symbol(first_symbol, remaining_string, depth)
         
         for res in first_results:
             new_remaining = res['remaining']
             # Recursively expand the rest of the symbols
-            rest_results = self.expand_non_terminal(rest_symbols, new_remaining, depth, res['derivation'])
-            results.extend(rest_results)
+            rest_results = self.expand_non_terminal(rest_symbols, new_remaining, depth)
+            for rres in rest_results:
+                results.append({
+                    'derivation': res['derivation'] + rres['derivation'],
+                    'remaining': rres['remaining']
+                })
             
         return results
 

@@ -59,7 +59,8 @@ def parse_grammar():
         })
         
     except Exception as e:
-        return jsonify({"status": "error", "message": str(e)})
+        import traceback
+        return jsonify({"status": "error", "message": traceback.format_exc()})
 
 def open_browser():
     import subprocess
