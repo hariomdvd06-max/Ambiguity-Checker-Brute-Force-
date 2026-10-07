@@ -154,10 +154,8 @@ const emptyState = document.getElementById('empty-state');
 const tree1Box = document.getElementById('tree-1');
 const tree2Box = document.getElementById('tree-2');
 
-// ✅ Relative URL for Vercel & Production deployment (with local dev fallback if on port 3000)
-const API_URL = (typeof window !== 'undefined' && window.location.port === '3000' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.startsWith('192.168.')))
-  ? `http://${window.location.hostname}:8000/api/check-ambiguity`
-  : '/api/check-ambiguity';
+// Localhost ya relative hatakar apna Render backend URL daalein:
+const BACKEND_URL = "https://cfg-ambiguity-backend.onrender.com"; // <-- apna Render URL yahan rakhein
 
 checkBtn.addEventListener('click', async () => {
   const startSymbol = document.getElementById('start-symbol').value.trim();
@@ -199,14 +197,16 @@ checkBtn.addEventListener('click', async () => {
   `;
 
   try {
-    const res = await fetch(API_URL, {
+    const payload = {
+      start_symbol: startSymbol,
+      rules: rules,
+      target_string: targetString
+    };
+
+    const res = await fetch(`${BACKEND_URL}/api/check-ambiguity`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        start_symbol: startSymbol,
-        rules: rules,
-        target_string: targetString
-      })
+      body: JSON.stringify(payload)
     });
 
     if (!res.ok) {
