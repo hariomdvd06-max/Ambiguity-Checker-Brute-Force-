@@ -43,22 +43,28 @@ def parse_grammar():
         is_ambiguous = detector.detect_ambiguity()
         unique_trees_count = detector.count_distinct_trees(trees)
         
-        # 4. Generate Visualizations (ASCII art)
+        # 4. Generate Visualizations (ASCII art, SVG, TikZ)
         tree_arts = []
         derivations = []
+        svgs = []
+        tikzs = []
         # Return at most 2 trees to fit the UI dual view
         for i, t in enumerate(trees[:2]):
             visualizer = TreeVisualizer(t)
             art = visualizer.render_ascii_tree()
             tree_arts.append(art)
             derivations.append(t.get_leftmost_derivation())
+            svgs.append(visualizer.generate_svg())
+            tikzs.append(visualizer.generate_tikz())
             
         return jsonify({
             "status": "success",
             "is_ambiguous": is_ambiguous,
             "total_trees": unique_trees_count,
             "trees": tree_arts,
-            "derivations": derivations
+            "derivations": derivations,
+            "svgs": svgs,
+            "tikzs": tikzs
         })
         
     except Exception as e:

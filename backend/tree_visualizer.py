@@ -178,6 +178,62 @@ class TreeVisualizer:
 
     def render_comparison(self, tree2):
         return f"Tree 1 Yield: {self.tree.get_yield()}\nTree 2 Yield: {tree2.get_yield()}"
+        
+    def generate_tikz(self):
+        def _node_to_tikz(node, indent=2):
+            ind = " " * indent
+            res = f"{ind}node {{{node.symbol}}}"
+            if not node.children:
+                return res
+            for child in node.children:
+                res += f"\n{ind}  child {{\n{_node_to_tikz(child, indent + 4)}\n{ind}  }}"
+            return res
+            
+        if not self.tree or not self.tree.root:
+            return ""
+            
+        tikz_str = "\\begin{tikzpicture}[level distance=1.5cm,\n"
+        tikz_str += "  level 1/.style={sibling distance=3cm},\n"
+        tikz_str += "  level 2/.style={sibling distance=1.5cm},\n"
+        tikz_str += "  every node/.style={circle, draw, minimum size=0.6cm}]\n"
+        tikz_str += f"  \\{_node_to_tikz(self.tree.root, 2).strip()};\n"
+        tikz_str += "\\end{tikzpicture}"
+        return tikz_str
+        
+    def generate_svg(self):
+        leaf_counter = [0]
+        
+        def _traverse(node, depth):
+            node.y = depth * 80 + 40
+            if not node.children:
+                node.x = leaf_counter[0] * 60 + 40
+                leaf_counter[0] += 1
+            else:
+                for c in node.children:
+                    _traverse(c, depth + 1)
+                node.x = (node.children[0].x + node.children[-1].x) / 2
+                
+        if not self.tree or not self.tree.root:
+            return "<svg></svg>"
+            
+        _traverse(self.tree.root, 0)
+        
+        max_x = max(leaf_counter[0] * 60 + 80, 200)
+        max_y = (self.tree.get_height() + 1) * 80 + 40
+        
+        svg_lines = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{max_x}" height="{max_y}" viewBox="0 0 {max_x} {max_y}">']
+        svg_lines.append('<style> text { font-family: monospace; font-size: 14px; text-anchor: middle; fill: #e2e8f0; } line { stroke: #475569; stroke-width: 2; } circle { fill: #0f172a; stroke: #3b82f6; stroke-width: 2; } </style>')
+        
+        def _draw(node):
+            for c in node.children:
+                svg_lines.append(f'<line x1="{node.x}" y1="{node.y+15}" x2="{c.x}" y2="{c.y-15}"/>')
+                _draw(c)
+            svg_lines.append(f'<circle cx="{node.x}" cy="{node.y}" r="15"/>')
+            svg_lines.append(f'<text x="{node.x}" y="{node.y+5}">{node.symbol}</text>')
+            
+        _draw(self.tree.root)
+        svg_lines.append('</svg>')
+        return "\n".join(svg_lines)
 
     def colorize_output(self):
         pass

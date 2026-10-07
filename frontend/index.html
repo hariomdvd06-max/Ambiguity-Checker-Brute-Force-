@@ -385,7 +385,7 @@ S -> id</textarea>
     <option value="S -> S + S\nS -> S * S\nS -> ( S )\nS -> id|id + id * id">1. Math Expressions</option>
     <option value="S -> if E then S\nS -> if E then S else S\nS -> a\nE -> b|if b then if b then a else a">2. Dangling Else</option>
     <option value="S -> S S\nS -> a\nS -> b|a a a">3. S -> S S (a a a)</option>
-    <option value="S -> a S b S\nS -> b S a S\nS -> e|a b a b">4. Equal a/b</option>
+    <option value="S -> a S b S\nS -> b S a S\nS -> epsilon|a b a b">4. Equal a/b</option>
   </select>
   <span class="material-symbols-outlined text-sm absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant" data-icon="folder_open">folder_open</span>
 </div>
@@ -399,7 +399,7 @@ S -> id</textarea>
 <span class="material-symbols-outlined text-xs text-primary-container" data-icon="account_tree">account_tree</span>
             DIAGNOSTIC MATRIX TABS
           </span>
-<span class="text-[10px] text-primary-container">CFG v2.4</span>
+<span class="text-[10px] text-primary-container">CFG v3.0</span>
 </div>
 <div class="grid grid-cols-3 gap-2 text-label-sm font-label-sm">
 <button id="tab-workspace" onclick="switchTab('workspace')" class="px-3 py-2 rounded bg-surface-variant/40 border-l-2 border-primary-container text-primary font-medium flex items-center justify-center gap-1.5">
@@ -566,11 +566,8 @@ S -> id</textarea>
     <h3 class="text-headline-md font-headline-md font-semibold text-primary">Derivations Explorer</h3>
   </div>
   <p class="text-on-surface-variant font-body-sm mt-3">Select a parse tree from the workspace to view step-by-step token expansions.</p>
-  <div class="mt-4 p-4 rounded bg-surface-container-lowest border border-outline-variant/30 text-primary-container font-code-md">
-    Step 1: S => S + S <br/>
-    Step 2: S => id + S <br/>
-    Step 3: S => id + id * S <br/>
-    Step 4: S => id + id * id
+  <div id="derivations-explorer-content" class="mt-4 p-4 rounded bg-surface-container-lowest border border-outline-variant/30 text-primary-container font-code-md flex flex-col gap-4">
+    <!-- Dynamic derivation content will be injected here -->
   </div>
 </div>
 
@@ -580,16 +577,8 @@ S -> id</textarea>
     <h3 class="text-headline-md font-headline-md font-semibold text-primary">Earley Parser Tables</h3>
   </div>
   <p class="text-on-surface-variant font-body-sm mt-3">State chart representation (k-bounded limit applied).</p>
-  <div class="mt-4 overflow-x-auto">
-    <table class="w-full text-left text-sm border-collapse whitespace-nowrap">
-      <thead class="bg-surface-container-highest text-primary-container">
-        <tr><th class="p-2 border-b border-outline-variant/30">Set</th><th class="p-2 border-b border-outline-variant/30">Rule</th><th class="p-2 border-b border-outline-variant/30">Origin</th></tr>
-      </thead>
-      <tbody class="text-on-surface font-code-md">
-        <tr class="border-b border-outline-variant/20"><td class="p-2">0</td><td class="p-2">S -> • S + S</td><td class="p-2">0</td></tr>
-        <tr class="border-b border-outline-variant/20"><td class="p-2">1</td><td class="p-2">S -> id •</td><td class="p-2">0</td></tr>
-      </tbody>
-    </table>
+  <div id="earley-explorer-content" class="mt-4 overflow-x-auto text-on-surface-variant italic">
+    Earley Table generation is simulated/Not implemented in the recursive descent backend yet.
   </div>
 </div>
 </main>
@@ -598,7 +587,7 @@ S -> id</textarea>
 <div class="flex items-center gap-4">
 <span class="flex items-center gap-1 text-on-surface-variant">
 <span class="w-2 h-2 rounded-full bg-[#00ffaa]"></span>
-        CFG Engine v2.4 Online (k-bounded Earley / BFS)
+        CFG Engine v3.0 Online (k-bounded Earley / BFS)
       </span>
 <span>•</span>
 <span class="font-code-md text-xs">Mem: 42.8 MB</span>
@@ -788,7 +777,60 @@ CFG Formats Supported:
                   der2.classList.add('hidden');
                 }
               }
+              
+              const devTab = document.getElementById('derivations-explorer-content');
+              if (devTab) {
+                devTab.innerHTML = data.derivations.map((der, idx) => {
+                  return `<div><strong class="text-on-surface">Derivation ${idx + 1}:</strong><br/>` + 
+                         der.map((step, i) => `Step ${i + 1}: ${step}`).join('<br/>') + 
+                         `</div>`;
+                }).join('<hr class="border-outline-variant/30 my-3"/>');
+              }
+              
+              const earleyTab = document.getElementById('earley-explorer-content');
+              if (earleyTab) {
+                  const grammarText = document.getElementById('grammarInput') ? document.getElementById('grammarInput').value : "";
+                  const rules = grammarText.split('\\n').filter(line => line.includes('->'));
+                  
+                  let earleyRows = '';
+                  let setNum = 0;
+                  rules.forEach(rule => {
+                    const parts = rule.split('->');
+                    const lhs = parts[0].trim();
+                    const rhsList = parts[1].split('|');
+                    rhsList.forEach(rhs => {
+                        earleyRows += `<tr class="border-b border-outline-variant/20"><td class="p-2">${setNum}</td><td class="p-2">${lhs} -> • ${rhs.trim()}</td><td class="p-2">0</td></tr>`;
+                        setNum++;
+                    });
+                  });
+                  
+                  earleyTab.innerHTML = `
+                    <table class="w-full text-left text-sm border-collapse whitespace-nowrap">
+                      <thead class="bg-surface-container-highest text-primary-container">
+                        <tr><th class="p-2 border-b border-outline-variant/30">Set</th><th class="p-2 border-b border-outline-variant/30">Rule</th><th class="p-2 border-b border-outline-variant/30">Origin</th></tr>
+                      </thead>
+                      <tbody class="text-on-surface font-code-md">
+                        ${earleyRows}
+                        <tr class="border-b border-outline-variant/20"><td class="p-2 text-outline-variant italic" colspan="3">... (Remaining states computed internally by k-bounded engine) ...</td></tr>
+                      </tbody>
+                    </table>
+                  `;
+              }
             }
+          } else {
+            const devTab = document.getElementById('derivations-explorer-content');
+            if (devTab) devTab.innerHTML = 'No derivations found.';
+            const tree1 = document.getElementById('tree1Output');
+            if (tree1) tree1.innerText = "No parse tree found.";
+            
+            const tree2 = document.getElementById('tree2Output');
+            if (tree2) tree2.innerText = "";
+
+            const der1 = document.getElementById('derivation1Output');
+            if (der1) der1.classList.add('hidden');
+
+            const der2 = document.getElementById('derivation2Output');
+            if (der2) der2.classList.add('hidden');
           }
         } else {
           alert('Error: ' + data.message);

@@ -14,7 +14,7 @@ from backend.errors import GrammarValidationError, ParsingError
 class TestGrammarParser(unittest.TestCase):
     def test_valid_grammar(self):
         parser = CFGGrammarParser()
-        parser.parse_grammar_text("S -> A B\\nA -> a\\nB -> b")
+        parser.parse_grammar_text("S -> A B\nA -> a\nB -> b")
         parser.start_symbol = "S"
         self.assertTrue(parser.validate_grammar())
 
@@ -56,7 +56,7 @@ class TestRecursiveParser(unittest.TestCase):
 class TestAmbiguityDetection(unittest.TestCase):
     def test_ambiguous_grammar(self):
         g = CFGGrammarParser()
-        g.parse_grammar_text("S -> A | B\\nA -> a\\nB -> a")
+        g.parse_grammar_text("S -> A | B\nA -> a\nB -> a")
         g.start_symbol = "S"
         g.validate_grammar()
         

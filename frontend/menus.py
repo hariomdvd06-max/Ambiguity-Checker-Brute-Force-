@@ -6,7 +6,7 @@ class MenusMixin:
         self.clear_screen()
         print("╔═══════════════════════════════════════════════════════════════╗")
         print("║              TOC AMBIGUITY CHECKER - MAIN MENU                ║")
-        print("║                  (Grammar Analysis Tool)                      ║")
+        print("║             (Grammar Analysis Tool v3.0-core)                 ║")
         print("╚═══════════════════════════════════════════════════════════════╝")
         print("[1] Load Existing Grammar")
         print("[2] Create New Grammar")
