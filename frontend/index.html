@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CFG Ambiguity Engine — Linear/Vercel Developer Tool</title>
+  <meta name="description" content="CFG Ambiguity Engine — Theory of Computation Derivation DAG & Earley Parser">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="CFG Engine">
+  <meta name="theme-color" content="#090a0f">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="styles.css?v=8">
+</head>
+<body class="bg-[#090a0f] text-slate-100 min-h-screen flex flex-col font-sans selection:bg-indigo-500/30 selection:text-indigo-200">
+
+  <!-- Linear-Style Navigation Header -->
+  <header class="border-b border-white/[0.08] bg-[#090a0f]/80 backdrop-blur-xl sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
+      <div class="flex items-center space-x-3.5">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center font-mono font-bold text-white shadow-lg shadow-indigo-500/25 text-xs border border-white/20">
+          CFG
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-sm font-bold tracking-tight text-white flex items-center gap-2">
+              CFG Ambiguity Engine
+            </h1>
+            <span class="hidden sm:inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-mono font-medium">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+              Engine v1.4 • Ready
+            </span>
+          </div>
+          <p class="text-[11px] text-slate-400 hidden sm:block">Automated Derivation DAG &amp; Earley Parse Tree Verifier</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <!-- PWA Install Button -->
+        <button id="install-btn" class="flex items-center gap-2 bg-white/[0.05] hover:bg-white/[0.1] text-slate-200 text-xs font-medium px-3 py-1.5 rounded-lg border border-white/[0.08] shadow-sm transition-all cursor-pointer backdrop-blur">
+          <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+          </svg>
+          <span>Install PWA</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Workstation Layout -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+    
+    <!-- Left Column: Grammar Builder & Controls -->
+    <section class="lg:col-span-5 space-y-5">
+      <div class="luxury-card p-5 space-y-4">
+        
+        <div class="flex items-center justify-between border-b border-white/[0.06] pb-3">
+          <h2 class="text-[11px] font-bold uppercase tracking-widest text-indigo-400 flex items-center gap-2">
+            <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+            Grammar Specification
+          </h2>
+          <span class="text-[10px] font-mono text-slate-500 uppercase">Context-Free</span>
+        </div>
+
+        <!-- Presets Bar -->
+        <div>
+          <label class="block text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Quick Presets</label>
+          <div class="flex flex-wrap gap-1.5">
+            <button type="button" class="preset-btn px-2.5 py-1 rounded-md text-[11px] font-mono bg-white/[0.04] hover:bg-indigo-500/20 text-slate-300 hover:text-indigo-300 border border-white/[0.06] hover:border-indigo-500/30 transition-all" data-preset="classic">S → S+S | a</button>
+            <button type="button" class="preset-btn px-2.5 py-1 rounded-md text-[11px] font-mono bg-white/[0.04] hover:bg-indigo-500/20 text-slate-300 hover:text-indigo-300 border border-white/[0.06] hover:border-indigo-500/30 transition-all" data-preset="dangling">Dangling Else</button>
+            <button type="button" class="preset-btn px-2.5 py-1 rounded-md text-[11px] font-mono bg-white/[0.04] hover:bg-indigo-500/20 text-slate-300 hover:text-indigo-300 border border-white/[0.06] hover:border-indigo-500/30 transition-all" data-preset="boolean">Boolean Expr</button>
+            <button type="button" class="preset-btn px-2.5 py-1 rounded-md text-[11px] font-mono bg-white/[0.04] hover:bg-indigo-500/20 text-slate-300 hover:text-indigo-300 border border-white/[0.06] hover:border-indigo-500/30 transition-all" data-preset="parens">S → (S)S | ε</button>
+          </div>
+        </div>
+
+        <!-- Start Symbol -->
+        <div>
+          <label for="start-symbol" class="block text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Start Symbol</label>
+          <input id="start-symbol" type="text" value="S" maxlength="3" class="w-16 luxury-input px-3 py-1.5 text-center text-xs font-bold text-indigo-300 rounded-lg outline-none" />
+        </div>
+
+        <!-- Grammar Rules -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <label class="block text-[10px] font-semibold uppercase tracking-wider text-slate-400">Production Rules (LHS &rarr; RHS)</label>
+            <span class="text-[10px] text-slate-500 font-mono">Use | for alternatives</span>
+          </div>
+          
+          <div id="rules-container" class="space-y-2">
+            <!-- Dynamic Rule Rows Injected via JS -->
+          </div>
+
+          <button id="add-rule-btn" class="text-xs flex items-center gap-1.5 text-indigo-400 hover:text-indigo-300 font-medium py-1 transition-colors cursor-pointer">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            Add Production Rule
+          </button>
+        </div>
+
+        <!-- Target String -->
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label for="target-string" class="block text-[10px] font-semibold uppercase tracking-wider text-slate-400">Target String (w)</label>
+            <span class="text-[10px] text-slate-500 font-mono">Press Enter to run</span>
+          </div>
+          <input id="target-string" type="text" value="a+a+a" placeholder="e.g. a+a+a or aabb" class="w-full luxury-input px-3.5 py-2 text-xs text-white rounded-lg outline-none" />
+        </div>
+
+        <!-- Action Button -->
+        <button id="check-btn" class="w-full luxury-btn-primary py-2.5 rounded-xl text-xs font-bold tracking-wider uppercase text-white flex items-center justify-center gap-2 cursor-pointer transition-all">
+          <svg class="w-4 h-4 text-indigo-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          <span>Evaluate Ambiguity</span>
+        </button>
+      </div>
+
+      <!-- Quick Syntax Cheat Sheet -->
+      <div class="luxury-card p-4 text-[11px] space-y-2 text-slate-400">
+        <div class="text-[10px] font-bold text-slate-300 uppercase tracking-widest flex items-center gap-1.5">
+          <span class="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>
+          Formal Grammar Syntax
+        </div>
+        <div class="grid grid-cols-2 gap-2 text-[10px] font-mono pt-1 text-slate-400">
+          <div><span class="text-indigo-300">Non-Terminals:</span> A-Z</div>
+          <div><span class="text-indigo-300">Terminals:</span> a-z, +, *, (, )</div>
+          <div><span class="text-indigo-300">Epsilon:</span> ε, eps, ""</div>
+          <div><span class="text-indigo-300">Alternation:</span> |</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Column: Verification Results, Derivation Graph, Trees & Earley Table -->
+    <section class="lg:col-span-7 space-y-6">
+      
+      <!-- Verdict Card -->
+      <div id="verdict-card" class="hidden luxury-card p-5 space-y-3">
+        <div class="flex items-center justify-between">
+          <span id="verdict-badge" class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider"></span>
+          <span id="tree-count-badge" class="text-xs text-slate-400 font-mono px-2.5 py-0.5 rounded-md bg-white/[0.04] border border-white/[0.08]"></span>
+        </div>
+        <p id="explanation-text" class="text-xs text-slate-300 leading-relaxed font-sans"></p>
+      </div>
+
+      <!-- Interactive Derivation Automaton Flow -->
+      <div id="derivation-automaton-card" class="hidden luxury-card p-5 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.06] pb-3">
+          <div>
+            <h3 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-indigo-400 animate-pulse"></span>
+              Derivation Flow Automaton
+            </h3>
+            <p class="text-[11px] text-slate-400">Leftmost divergence graph proving concurrent derivations</p>
+          </div>
+
+          <!-- Playback Controls -->
+          <div class="flex items-center gap-2 flex-wrap">
+            <button id="graph-prev-btn" class="px-2.5 py-1 bg-white/[0.05] hover:bg-white/[0.1] text-slate-200 text-xs rounded-lg border border-white/[0.08] font-medium transition-all cursor-pointer">‹ Prev</button>
+            <button id="graph-play-btn" class="px-3.5 py-1 luxury-btn-primary text-white text-xs rounded-lg font-bold shadow transition-all cursor-pointer">▶ Play Derivation</button>
+            <button id="graph-next-btn" class="px-2.5 py-1 bg-white/[0.05] hover:bg-white/[0.1] text-slate-200 text-xs rounded-lg border border-white/[0.08] font-medium transition-all cursor-pointer">Next ›</button>
+            <button id="graph-reset-btn" class="px-2 py-1 text-slate-400 hover:text-rose-400 text-xs font-mono transition-all cursor-pointer">Reset</button>
+
+            <!-- Speed Selector -->
+            <div class="flex items-center gap-1.5 text-xs text-slate-400 ml-1">
+              <label for="graph-speed-select" class="font-medium text-slate-400">Speed:</label>
+              <select id="graph-speed-select" class="bg-[#0b0e17] border border-white/[0.1] rounded-md px-2 py-1 text-xs text-indigo-300 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                <option value="2500" selected>Very Slow (2.5s)</option>
+                <option value="1600">Slow (1.6s)</option>
+                <option value="900">Normal (0.9s)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Responsive SVG Canvas for Graph (Touch Pan & Dynamic Auto-Fit) -->
+        <div class="w-full overflow-x-auto touch-pan-x bg-[#07090e] rounded-xl p-3 border border-white/[0.06] shadow-inner scrollbar-thin">
+          <svg id="derivation-svg" class="w-full h-auto min-w-[650px] md:min-w-full block mx-auto" viewBox="0 0 850 260" preserveAspectRatio="xMinYMid meet"></svg>
+        </div>
+        
+        <div id="graph-status-bar" class="text-xs font-mono text-indigo-300 bg-[#07090e] p-3 rounded-lg border border-white/[0.06] text-center shadow-inner">
+          Click 'Play Derivation' to see how two distinct branches generate the target string.
+        </div>
+      </div>
+
+      <!-- Tree Render Containers -->
+      <div id="trees-container" class="hidden space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="luxury-card p-4 overflow-x-auto">
+            <div class="flex items-center justify-between border-b border-white/[0.06] pb-2.5 mb-3">
+              <h3 class="text-[11px] font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11"/></svg>
+                Parse Tree 1
+              </h3>
+              <span class="text-[10px] font-mono text-indigo-400">Leftmost Derivation</span>
+            </div>
+            <div id="tree-1" class="tree-root flex justify-center min-w-max p-2"></div>
+          </div>
+
+          <div class="luxury-card p-4 overflow-x-auto">
+            <div class="flex items-center justify-between border-b border-white/[0.06] pb-2.5 mb-3">
+              <h3 class="text-[11px] font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11"/></svg>
+                Parse Tree 2
+              </h3>
+              <span class="text-[10px] font-mono text-purple-400">Alternative Derivation</span>
+            </div>
+            <div id="tree-2" class="tree-root flex justify-center min-w-max p-2"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interactive Simulation / Step-by-Step Controller -->
+      <div id="simulation-panel" class="hidden luxury-card p-5 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.06] pb-3">
+          <div>
+            <h3 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              Manual Walkthrough &amp; Execution Trace
+            </h3>
+            <p class="text-[11px] text-slate-400">Step <span id="current-step-label" class="font-bold text-indigo-400 font-mono">0</span> of <span id="total-steps-label" class="font-mono">0</span></p>
+          </div>
+
+          <!-- Playback Controls -->
+          <div class="flex items-center gap-2">
+            <button id="btn-prev-step" class="px-2.5 py-1 bg-white/[0.05] hover:bg-white/[0.1] text-slate-200 text-xs rounded-lg border border-white/[0.08] font-medium transition-all cursor-pointer">‹ Prev</button>
+            <button id="btn-play-pause" class="px-3.5 py-1 luxury-btn-primary text-white text-xs rounded-lg font-bold shadow transition-all cursor-pointer">▶ Play Auto</button>
+            <button id="btn-next-step" class="px-2.5 py-1 bg-white/[0.05] hover:bg-white/[0.1] text-slate-200 text-xs rounded-lg border border-white/[0.08] font-medium transition-all cursor-pointer">Next ›</button>
+            <button id="btn-reset-steps" class="px-2 py-1 text-slate-400 hover:text-rose-400 text-xs font-mono transition-all cursor-pointer">Reset</button>
+          </div>
+
+          <!-- Speed Controller -->
+          <div class="flex items-center gap-1.5 text-xs text-slate-400">
+            <label for="playback-speed" class="font-medium text-slate-400">Speed:</label>
+            <select id="playback-speed" name="playback-speed" aria-label="Playback Speed" class="bg-[#0b0e17] border border-white/[0.1] rounded-md px-2 py-1 text-xs text-indigo-300 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+              <option value="1500">Slow (1.5s)</option>
+              <option value="800" selected>Normal (0.8s)</option>
+              <option value="300">Fast (0.3s)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Live Reasoning Board (Blackboard style) -->
+        <div id="reasoning-box" class="bg-[#07090e] border border-white/[0.06] rounded-xl p-4 font-mono text-xs text-indigo-200 leading-relaxed shadow-inner min-h-[64px] flex items-center">
+          Click 'Next Step' or 'Play Auto' to begin the manual derivation walkthrough...
+        </div>
+      </div>
+
+      <!-- Earley Parser Table Section -->
+      <div id="earley-container" class="hidden luxury-card p-5 space-y-4">
+        <div class="flex items-center justify-between border-b border-white/[0.06] pb-3">
+          <div>
+            <h3 class="text-xs font-bold text-indigo-400 uppercase tracking-wider">Earley Parser Chart / State Sets</h3>
+            <p class="text-[11px] text-slate-400">High-density state sets (S₀ to Sₙ) computed via Earley algorithm</p>
+          </div>
+          <span class="px-2 py-0.5 rounded text-[10px] font-mono text-slate-400 bg-white/[0.04] border border-white/[0.08]">O(n³) bounded</span>
+        </div>
+        <div id="earley-states-list" class="space-y-4"></div>
+      </div>
+
+      <!-- Initial / Empty State -->
+      <div id="empty-state" class="border border-dashed border-white/[0.1] rounded-2xl p-12 text-center luxury-card bg-transparent space-y-3">
+        <div class="w-12 h-12 rounded-xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center mx-auto text-indigo-400 shadow-sm">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
+        </div>
+        <h3 class="text-sm font-semibold text-slate-200">No Grammar Evaluated Yet</h3>
+        <p class="text-xs text-slate-400 max-w-sm mx-auto">
+          Enter your CFG productions on the left or select a quick preset, then click <strong class="text-indigo-400">Evaluate Ambiguity</strong>.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer with Academic / Engineering Branding -->
+  <footer class="mt-auto border-t border-white/[0.08] bg-[#090a0f]/60 backdrop-blur py-4 text-xs text-slate-400">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px]">
+      <span class="text-slate-400 flex items-center gap-1.5">
+        <span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
+        Context-Free Grammar Ambiguity Engine &bull; Formal Language &amp; Automata Theory
+      </span>
+      <span class="text-indigo-400 font-mono font-medium">Developed by Hariom B. Dwivedi | USN: CM24080 | SBJITMR Nagpur</span>
+    </div>
+  </footer>
+
+  <script src="app.js?v=13"></script>
+</body>
+</html>

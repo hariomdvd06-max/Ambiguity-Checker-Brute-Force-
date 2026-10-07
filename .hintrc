@@ -1,0 +1,16 @@
+{
+  "extends": [
+    "web-recommended"
+  ],
+  "hints": {
+    "html-checker": "off",
+    "compat-api/html": [
+      "default",
+      {
+        "ignore": [
+          "meta[name=theme-color]"
+        ]
+      }
+    ]
+  }
+}
