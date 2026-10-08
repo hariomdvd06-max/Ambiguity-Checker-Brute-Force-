@@ -88,88 +88,90 @@ code, pre, .font-mono, input.font-mono {
   color: #ffffff;
 }
 
-/* Parse Tree Visualizer High-End Nodes */
-.tree-node {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 0 6px;
-  position: relative;
+/* Parse Tree Visualizer High-End Nodes & SVG Styles */
+.tree-svg-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 10px;
+  background: rgba(7, 9, 14, 0.6);
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
 }
 
-.tree-node .node-badge {
-  background: linear-gradient(180deg, #1e2538 0%, #131826 100%);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  color: #a5b4fc;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
-  padding: 6px 12px;
-  font-size: 0.8rem;
-  font-weight: 700;
+.tree-svg-node text {
   font-family: 'JetBrains Mono', monospace;
-  border-radius: 8px;
-  z-index: 10;
-  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  user-select: none;
 }
 
-.tree-node .node-badge:hover {
-  transform: scale(1.06);
-  border-color: #818cf8;
-  box-shadow: 0 0 12px rgba(99, 102, 241, 0.4);
+.tree-svg-edge {
+  fill: none;
+  stroke: rgba(129, 140, 248, 0.35);
+  stroke-width: 1.8;
+  transition: stroke 0.2s ease;
 }
 
-.tree-node .node-badge.terminal {
-  background: linear-gradient(180deg, rgba(16, 185, 129, 0.18) 0%, rgba(6, 78, 59, 0.45) 100%);
-  border: 1px solid rgba(16, 185, 129, 0.35);
+.tree-svg-edge:hover {
+  stroke: rgba(129, 140, 248, 0.8);
+}
+
+/* Validation Hint Box */
+.hint-valid {
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.25);
   color: #6ee7b7;
 }
 
-.tree-node .node-badge.epsilon {
-  background: linear-gradient(180deg, rgba(245, 158, 11, 0.18) 0%, rgba(120, 53, 15, 0.45) 100%);
-  border: 1px solid rgba(245, 158, 11, 0.35);
-  color: #fde68a;
-  font-style: italic;
+.hint-warning {
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  color: #fcd34d;
 }
 
-.node-children {
+.hint-error {
+  background: rgba(244, 63, 94, 0.08);
+  border: 1px solid rgba(244, 63, 94, 0.25);
+  color: #fda4af;
+}
+
+/* Earley State Filter Pills */
+.state-pill {
+  padding: 3px 9px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #94a3b8;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.state-pill:hover {
+  background: rgba(99, 102, 241, 0.15);
+  border-color: rgba(99, 102, 241, 0.3);
+  color: #c7d2fe;
+}
+
+.state-pill.active {
+  background: #4f46e5;
+  border-color: #6366f1;
+  color: #ffffff;
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.4);
+}
+
+/* Single Derivation Placeholder Card */
+.single-derivation-card {
+  min-height: 280px;
   display: flex;
-  margin-top: 20px;
-  position: relative;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
-}
-
-/* Horizontal connector line connecting children */
-.node-children::before {
-  content: '';
-  position: absolute;
-  top: -10px;
-  left: 20px;
-  right: 20px;
-  height: 2px;
-  background-color: rgba(255, 255, 255, 0.15);
-}
-
-/* Vertical connector line from parent to the horizontal line */
-.node-children::after {
-  content: '';
-  position: absolute;
-  top: -20px;
-  left: 50%;
-  width: 2px;
-  height: 10px;
-  background-color: rgba(255, 255, 255, 0.15);
-  transform: translateX(-50%);
-}
-
-/* Vertical drop line down into each child */
-.node-children > .tree-node::before {
-  content: '';
-  position: absolute;
-  top: -10px;
-  left: 50%;
-  width: 2px;
-  height: 10px;
-  background-color: rgba(255, 255, 255, 0.15);
-  transform: translateX(-50%);
+  text-align: center;
+  padding: 2rem 1.5rem;
+  background: radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.04) 0%, transparent 70%);
+  border: 1px dashed rgba(16, 185, 129, 0.25);
+  border-radius: 12px;
 }
 
 /* Earley Parser Chart Styling */

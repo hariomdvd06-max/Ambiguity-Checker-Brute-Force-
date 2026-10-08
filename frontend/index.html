@@ -69,17 +69,17 @@
         <div>
           <label class="block text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Quick Presets</label>
           <div class="flex flex-wrap gap-1.5">
-            <button type="button" class="preset-btn px-2.5 py-1 rounded-md text-[11px] font-mono bg-white/[0.04] hover:bg-indigo-500/20 text-slate-300 hover:text-indigo-300 border border-white/[0.06] hover:border-indigo-500/30 transition-all" data-preset="classic">S → S+S | a</button>
+            <button type="button" class="preset-btn px-2.5 py-1 rounded-md text-[11px] font-mono bg-white/[0.04] hover:bg-indigo-500/20 text-slate-300 hover:text-indigo-300 border border-white/[0.06] hover:border-indigo-500/30 transition-all" data-preset="arithmetic">E → E+E | E*E | a</button>
             <button type="button" class="preset-btn px-2.5 py-1 rounded-md text-[11px] font-mono bg-white/[0.04] hover:bg-indigo-500/20 text-slate-300 hover:text-indigo-300 border border-white/[0.06] hover:border-indigo-500/30 transition-all" data-preset="dangling">Dangling Else</button>
-            <button type="button" class="preset-btn px-2.5 py-1 rounded-md text-[11px] font-mono bg-white/[0.04] hover:bg-indigo-500/20 text-slate-300 hover:text-indigo-300 border border-white/[0.06] hover:border-indigo-500/30 transition-all" data-preset="boolean">Boolean Expr</button>
-            <button type="button" class="preset-btn px-2.5 py-1 rounded-md text-[11px] font-mono bg-white/[0.04] hover:bg-indigo-500/20 text-slate-300 hover:text-indigo-300 border border-white/[0.06] hover:border-indigo-500/30 transition-all" data-preset="parens">S → (S)S | ε</button>
+            <button type="button" class="preset-btn px-2.5 py-1 rounded-md text-[11px] font-mono bg-white/[0.04] hover:bg-indigo-500/20 text-slate-300 hover:text-indigo-300 border border-white/[0.06] hover:border-indigo-500/30 transition-all" data-preset="parens">S → ( S ) | a</button>
+            <button type="button" class="preset-btn px-2.5 py-1 rounded-md text-[11px] font-mono bg-white/[0.04] hover:bg-indigo-500/20 text-slate-300 hover:text-indigo-300 border border-white/[0.06] hover:border-indigo-500/30 transition-all" data-preset="palindrome">S → aSa | bSb | ε</button>
           </div>
         </div>
 
         <!-- Start Symbol -->
         <div>
           <label for="start-symbol" class="block text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Start Symbol</label>
-          <input id="start-symbol" type="text" value="S" maxlength="3" class="w-16 luxury-input px-3 py-1.5 text-center text-xs font-bold text-indigo-300 rounded-lg outline-none" />
+          <input id="start-symbol" type="text" value="E" maxlength="5" class="w-20 luxury-input px-3 py-1.5 text-center text-xs font-bold text-indigo-300 rounded-lg outline-none" />
         </div>
 
         <!-- Grammar Rules -->
@@ -105,8 +105,11 @@
             <label for="target-string" class="block text-[10px] font-semibold uppercase tracking-wider text-slate-400">Target String (w)</label>
             <span class="text-[10px] text-slate-500 font-mono">Press Enter to run</span>
           </div>
-          <input id="target-string" type="text" value="a+a+a" placeholder="e.g. a+a+a or aabb" class="w-full luxury-input px-3.5 py-2 text-xs text-white rounded-lg outline-none" />
+          <input id="target-string" type="text" value="a + a * a + a" placeholder="e.g. a + a * a + a or if c then a else a" class="w-full luxury-input px-3.5 py-2 text-xs text-white rounded-lg outline-none" />
         </div>
+
+        <!-- Real-Time UI Validation Hints -->
+        <div id="validation-hint-box" class="hidden text-xs rounded-xl p-3 transition-all space-y-1"></div>
 
         <!-- Action Button -->
         <button id="check-btn" class="w-full luxury-btn-primary py-2.5 rounded-xl text-xs font-bold tracking-wider uppercase text-white flex items-center justify-center gap-2 cursor-pointer transition-all">
@@ -247,14 +250,20 @@
 
       <!-- Earley Parser Table Section -->
       <div id="earley-container" class="hidden luxury-card p-5 space-y-4">
-        <div class="flex items-center justify-between border-b border-white/[0.06] pb-3">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.06] pb-3">
           <div>
             <h3 class="text-xs font-bold text-indigo-400 uppercase tracking-wider">Earley Parser Chart / State Sets</h3>
-            <p class="text-[11px] text-slate-400">High-density state sets (S₀ to Sₙ) computed via Earley algorithm</p>
+            <p class="text-[11px] text-slate-400">High-density state sets (S₀ to Sₙ) computed via generalized Earley algorithm</p>
           </div>
           <span class="px-2 py-0.5 rounded text-[10px] font-mono text-slate-400 bg-white/[0.04] border border-white/[0.08]">O(n³) bounded</span>
         </div>
-        <div id="earley-states-list" class="space-y-4"></div>
+        
+        <!-- Filter Pills Bar for State Sets -->
+        <div id="earley-filter-bar" class="flex flex-wrap items-center gap-1.5 pt-1">
+          <!-- Populated dynamically via JS -->
+        </div>
+
+        <div id="earley-states-list" class="space-y-4 max-h-[550px] overflow-y-auto pr-1 scrollbar-thin"></div>
       </div>
 
       <!-- Initial / Empty State -->
